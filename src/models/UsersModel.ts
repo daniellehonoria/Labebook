@@ -1,10 +1,12 @@
-export class Users{
+import { IUsersDB, UserModel, USER_ROLES } from "../interfaces"
+
+export class User{
     constructor(
         private id: string,
         private name: string,
         private email: string,
         private password: string,
-        private role: string,
+        private role: USER_ROLES,
         private createdAt:string
     ){}
 public getId(): string{
@@ -31,10 +33,10 @@ public getPassword(): string{
 public setPassword(value:string): void{
     this.password=value
 }
-public getRole(): string{
+public getRole(): USER_ROLES{
     return this.role
 }
-public setRole(value:string): void{
+public setRole(value:USER_ROLES): void{
     this.role=value
 }
 public getCreatedAt(): string {
@@ -43,4 +45,30 @@ public getCreatedAt(): string {
 public setCreatedAt(value: string): void {
     this.createdAt = value
 }
+
+//metodos de conversão
+
+//model para banco de dados
+public toDBModelUsers(): IUsersDB{
+    return{
+        id:this.id,
+        name:this.name,
+        email:this.email,
+        password:this.password,
+        role:this.role,
+        created_at:this.createdAt
+    }
 }
+//model para regra de negocios
+public toBusinessModelUsers(): UserModel{
+    return{
+        id:this.id,
+        name:this.name,
+        email:this.email,
+        password:this.password,
+        role:this.role,
+        createdAt:this.createdAt
+    }
+}
+}
+

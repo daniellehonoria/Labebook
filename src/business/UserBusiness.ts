@@ -1,13 +1,21 @@
 import { UserDatabase } from "../database/UsersDatabase";
-import { Users } from "../models/Users";
-import {IUsersDB} from "../types"
-
+import { User } from "../models/UsersModel";
+import { IUsersDB } from "../interfaces";
 export class UserBusiness{
+    constructor(
+        private usersDatabase: UserDatabase
+    ){}
     public getUsers = async ()=>{
-        const usersDatabase = new UserDatabase()
-        const usersDB: IUsersDB[] = await usersDatabase.findUsers()
-
-        return usersDB
-
+        const usersDB: IUsersDB[] = await this.usersDatabase.findUsers()
+        
+        const users = usersDB.map((userDB) =>new User(
+            userDB.id,
+            userDB.name,
+            userDB.email,
+            userDB.password,
+            userDB.role,
+            userDB.created_at
+        ))
+        return users
     }
 }
