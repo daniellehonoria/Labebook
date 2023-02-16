@@ -1,4 +1,4 @@
--- Active: 1676323343806@@127.0.0.1@3306
+-- Active: 1676552648305@@127.0.0.1@3306
 CREATE TABLE users (
     id TEXT NOT NULL UNIQUE PRIMARY KEY,
     name TEXT NOT NULL,
@@ -20,13 +20,16 @@ CREATE TABLE posts (
     id TEXT NOT NULL UNIQUE PRIMARY KEY,
     creator_id TEXT NOT NULL,
     content TEXT,
-    likes INTEGER DEFAULT(0),
-    dislikes INTEGER DEFAULT(0),
+    likes INTEGER DEFAULT (0) NOT NULL,
+    dislikes INTEGER DEFAULT (0) NOT NULL,
     created_at TEXT DEFAULT (DATETIME()),
     updated_at TEXT DEFAULT (DATETIME()),
-    FOREIGN KEY (creator_id) REFERENCES users (id)
+    FOREIGN KEY (creator_id) REFERENCES users (id) 
+        ON DELETE CASCADE 
+        ON UPDATE CASCADE
 );
 DROP TABLE posts;
+SELECT * FROM posts;
 INSERT INTO posts(id, creator_id, content)
 VALUES
 ("p001", "u001", "Meu primeiro post no labook"),
@@ -38,7 +41,26 @@ VALUES
 CREATE TABLE likes_deslikes(
     user_id TEXT NOT NULL,
     post_id TEXT NOT NULL,
-    like INTEGER DEFAULT(0),
-    FOREIGN KEY (user_id) REFERENCES users(id),
+    like INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE CASCADE 
+        ON UPDATE CASCADE,
     FOREIGN KEY (post_id) REFERENCES posts (id)
+        ON DELETE CASCADE 
+        ON UPDATE CASCADE
 );
+DROP TABLE likes_deslikes;
+SELECT * FROM likes_deslikes;
+
+INSERT INTO likes_deslikes (user_id, post_id, like)
+VALUES
+("u002", "p001", 1),
+("u003", "p001", 1),
+("u002", "p002", 1),
+("u003", "p002", 1),
+("u001", "p003", 1),
+("u003", "p003", 0);
+
+UPDATE posts
+SET likes = 2
+WHERE id = "p002"
