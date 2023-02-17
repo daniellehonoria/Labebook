@@ -42,3 +42,20 @@ export interface PostsModel{
     }
    
 }
+export interface CreatePostInputDTO{
+    id: string,
+    content: string,
+    likes:number,
+    dislikes: number,
+    createdAt:string,
+    updatedAt:string,
+    creatorId:string,
+    creatorName:string
+}
+export interface CreatePostOutputDTO{
+    mensagem:string,
+    post:{
+        id:string,
+        content:string
+    }
+}

@@ -24,7 +24,6 @@ export class Posts{
     public setContent(value:string):void{
         this.content = value
     }
-
     public getLike():number{
        return this.likes
     }
@@ -36,7 +35,6 @@ export class Posts{
     }
     public setDislikes(value:number): void{
         this.dislikes = value
-
     }        
     public getCreatedAt(): string{
         return this.createdAt
