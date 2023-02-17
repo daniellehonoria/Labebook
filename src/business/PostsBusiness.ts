@@ -1,12 +1,14 @@
 import { PostDatabase } from "../database/PostsDatabase";
+import { PostDTO } from "../dtos/PostDto";
 import { BadRequestError } from "../Errors/BadRequestError";
 import { NotFoundError } from "../Errors/NotFoundError";
-import { IPostDB } from "../interfaces";
+import {  CreatePostInputDTO, CreatePostOutputDTO, IPostDB } from "../interfaces";
 import { Posts } from "../models/PostsModel";
 
 export class PostsBusiness{
     constructor(
-        private postsDatabase: PostDatabase
+        private postsDatabase: PostDatabase,
+        private postDTO: PostDTO
     ){}
 public getPosts = async()=>{
     const postsDB: IPostDB[] = await this.postsDatabase.findPosts()
@@ -23,16 +25,11 @@ public getPosts = async()=>{
     ))
     return posts
 }
-public createPost = async (input:any) =>{
-    const {id, content, likes, dislikes, createdAt, updatedAt, creatorId, creatorName} =input
-    if (typeof id !== "string") {
-        throw new BadRequestError("'id' deve ser string")
-    }
+public createPost = async (input:CreatePostInputDTO):Promise<CreatePostOutputDTO> =>{
+    const {id, content, likes, dislikes, createdAt, updatedAt,creatorId, creatorName} =input
+ 
     if(id.length < 2){
         throw new BadRequestError("id deve ter ao menos 2 strings")
-    }
-    if(typeof content !== "string"){
-        throw new BadRequestError("content deve ser string")
     }
     if(content.length < 2){
         throw new BadRequestError("Content deve ter ao menos 2 strings")
@@ -42,6 +39,7 @@ public createPost = async (input:any) =>{
     if (postsDBIdExists){
         throw new BadRequestError("Id já existe")
     }
+    //instancia do post
     const newPost = new Posts(
         id, 
         content,
@@ -52,11 +50,12 @@ public createPost = async (input:any) =>{
         creatorId,
         creatorName
     ) 
+    //modelagem da tabela
     const postToDB = newPost.toDBModelPosts()
 
     await this.postsDatabase.createPost(postToDB)
 
-const output = "Post criado"
+const output = this.postDTO.createPostOutputDTO(newPost)
 
  return output
 }

@@ -2,13 +2,17 @@ import express from "express";
 import { PostsBusiness } from "../business/PostsBusiness";
 import { PostController } from "../controller/PostController";
 import { PostDatabase } from "../database/PostsDatabase";
+import { PostDTO } from "../dtos/PostDto";
 
 export const postsRouter = express.Router()
 
 const postController = new PostController(
     new PostsBusiness(
         new PostDatabase(),
-    )
+        new PostDTO()
+    ),
+      new PostDTO()
+
        )
 postsRouter.get("/", postController.getPosts)
 postsRouter.post("/", postController.createPost)

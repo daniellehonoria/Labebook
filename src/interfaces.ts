@@ -2,6 +2,11 @@ export enum USER_ROLES{
     NORMAL="NORMAL",
     ADMIN="ADMIN"
 }
+export interface TokenPayload {
+    id: string,
+		name: string,
+    role: USER_ROLES
+}
 
 export interface IUsersDB{
     id: string,
@@ -41,4 +46,21 @@ export interface PostsModel{
         name:string
     }
    
+}
+export interface CreatePostInputDTO{
+    id: string,
+    content: string,
+    likes:number,
+    dislikes: number,
+    createdAt:string,
+    updatedAt:string,
+    creatorId:string,
+    creatorName:string
+}
+export interface CreatePostOutputDTO{
+    mensagem:string,
+    post:{
+        id:string,
+        content:string
+    }
 }
