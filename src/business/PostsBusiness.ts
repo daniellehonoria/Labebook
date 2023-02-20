@@ -4,11 +4,14 @@ import { BadRequestError } from "../Errors/BadRequestError";
 import { NotFoundError } from "../Errors/NotFoundError";
 import {  CreatePostInputDTO, CreatePostOutputDTO, IPostDB } from "../interfaces";
 import { Posts } from "../models/PostsModel";
+import { IdGenerator } from "../services/IdGenerator";
 
 export class PostsBusiness{
     constructor(
         private postsDatabase: PostDatabase,
-        private postDTO: PostDTO
+        private postDTO: PostDTO,
+        private idGenerator: IdGenerator
+
     ){}
 public getPosts = async()=>{
     const postsDB: IPostDB[] = await this.postsDatabase.findPosts()
@@ -26,7 +29,9 @@ public getPosts = async()=>{
     return posts
 }
 public createPost = async (input:CreatePostInputDTO):Promise<CreatePostOutputDTO> =>{
-    const {id, content, likes, dislikes, createdAt, updatedAt,creatorId, creatorName} =input
+    const id = this.idGenerator.generate()
+
+    const {content, likes, dislikes, createdAt, updatedAt,creatorId, creatorName} =input
  
     if(id.length < 2){
         throw new BadRequestError("id deve ter ao menos 2 strings")

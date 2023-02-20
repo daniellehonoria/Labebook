@@ -4,25 +4,49 @@ export enum USER_ROLES{
 }
 export interface TokenPayload {
     id: string,
-		name: string,
+	name: string,
     role: USER_ROLES
 }
-
 export interface IUsersDB{
     id: string,
     name: string,
     email:string,
     password: string,
-    role: string,
+    role: USER_ROLES,
     created_at: string
 }
-export interface UserModel{
+export interface createUserInput{
     id: string,
     name: string,
     email:string,
     password: string,
     role: string,
     createdAt: string
+}
+export interface UserModel{
+    id: string,
+    name: string,
+    email:string,
+    password: string,
+    role: USER_ROLES,
+    createdAt: string
+}
+export interface SignupInput {
+    name: string,
+    email: string,
+    password: string
+}
+export interface SignupOutput {
+    token: string
+}
+
+export interface LoginInput {
+    email: unknown,
+    password: unknown
+}
+
+export interface LoginOutput {
+    token: string
 }
 export interface IPostDB{
     id: string,
