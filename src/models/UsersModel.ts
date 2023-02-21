@@ -1,6 +1,5 @@
 import { IUsersDB, UserModel, USER_ROLES } from "../interfaces"
 
-
 export class User {    
     constructor(
         private id: string,

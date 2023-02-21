@@ -15,14 +15,6 @@ export interface IUsersDB{
     role: USER_ROLES,
     created_at: string
 }
-export interface createUserInput{
-    id: string,
-    name: string,
-    email:string,
-    password: string,
-    role: string,
-    createdAt: string
-}
 export interface UserModel{
     id: string,
     name: string,
@@ -30,23 +22,6 @@ export interface UserModel{
     password: string,
     role: USER_ROLES,
     createdAt: string
-}
-export interface SignupInput {
-    name: string,
-    email: string,
-    password: string
-}
-export interface SignupOutput {
-    token: string
-}
-
-export interface LoginInput {
-    email: unknown,
-    password: unknown
-}
-
-export interface LoginOutput {
-    token: string
 }
 export interface IPostDB{
     id: string,
@@ -72,14 +47,8 @@ export interface PostsModel{
    
 }
 export interface CreatePostInputDTO{
-    id: string,
-    content: string,
-    likes:number,
-    dislikes: number,
-    createdAt:string,
-    updatedAt:string,
-    creatorId:string,
-    creatorName:string
+    token: string | undefined,
+    content: string
 }
 export interface CreatePostOutputDTO{
     mensagem:string,

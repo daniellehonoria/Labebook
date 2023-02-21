@@ -16,6 +16,8 @@ VALUES
 ("u004", "Antonio Pereira", "antonio@mail.com", "antonio65"),
 ("u005", "Sonia Maria", "sonia@mail.com", "sonia07");
 
+SELECT * FROM users;
+
 CREATE TABLE posts (
     id TEXT NOT NULL UNIQUE PRIMARY KEY,
     creator_id TEXT NOT NULL,

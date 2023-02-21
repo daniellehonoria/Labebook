@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import { PostsBusiness } from "../business/PostsBusiness";
 import { PostDTO } from "../dtos/PostDto";
 import { BaseError } from "../Errors/BaseError";
+import { CreatePostInputDTO } from "../interfaces";
 
 export class PostController{
     constructor(
@@ -25,18 +26,12 @@ export class PostController{
     }
     public createPost = async(req:Request, res:Response) =>{
         try {
-            const input = this.postDTO.createPostInput(
-                req.body.id,
-                req.body.content,
-                req.body.likes,
-                req.body.dislikes,
-                req.body.createdAt,
-                req.body.updatedAt,
-                req.body.creatorId,
-                req.body.creatorName
+            const input: CreatePostInputDTO = this.postDTO.createPostInput(
+               req.headers.authorization,
+                req.body.content
             )
-            const output = await this.postsBusiness.createPost(input)
-            res.status(200).send(output)
+         await this.postsBusiness.createPost(input)
+            res.status(201).end()
         } catch (error) {
             console.log(error)
             if (error instanceof BaseError) {

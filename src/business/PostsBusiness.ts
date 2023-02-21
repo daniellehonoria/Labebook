@@ -1,16 +1,16 @@
 import { PostDatabase } from "../database/PostsDatabase";
-import { PostDTO } from "../dtos/PostDto";
 import { BadRequestError } from "../Errors/BadRequestError";
 import { NotFoundError } from "../Errors/NotFoundError";
-import {  CreatePostInputDTO, CreatePostOutputDTO, IPostDB } from "../interfaces";
+import {  CreatePostInputDTO, CreatePostOutputDTO, IPostDB, USER_ROLES } from "../interfaces";
 import { Posts } from "../models/PostsModel";
 import { IdGenerator } from "../services/IdGenerator";
+import { TokenManager } from "../services/TokenManager";
 
 export class PostsBusiness{
     constructor(
         private postsDatabase: PostDatabase,
-        private postDTO: PostDTO,
-        private idGenerator: IdGenerator
+        private idGenerator: IdGenerator,
+        private tokenManager : TokenManager
 
     ){}
 public getPosts = async()=>{
@@ -28,28 +28,28 @@ public getPosts = async()=>{
     ))
     return posts
 }
-public createPost = async (input:CreatePostInputDTO):Promise<CreatePostOutputDTO> =>{
-    const id = this.idGenerator.generate()
-
-    const {content, likes, dislikes, createdAt, updatedAt,creatorId, creatorName} =input
+public createPost = async (input:CreatePostInputDTO):Promise<void> =>{
+    const {token, content} =input
  
-    if(id.length < 2){
-        throw new BadRequestError("id deve ter ao menos 2 strings")
-    }
-    if(content.length < 2){
-        throw new BadRequestError("Content deve ter ao menos 2 strings")
-    }
-    const postsDBIdExists = await this.postsDatabase.findPostById(id)
+    if (token === undefined)throw new BadRequestError("Espera-se um token")
+    if(content.length < 2)throw new BadRequestError("Content deve ter ao menos 2 strings")
 
-    if (postsDBIdExists){
-        throw new BadRequestError("Id já existe")
-    }
+        const payload = this.tokenManager.getPayload(token)
+
+    if(payload === null) throw new BadRequestError("Token inválido")
+    if (typeof content !== "string") throw new BadRequestError("Content deve ser string")
+    const id = this.idGenerator.generate()
+    const createdAt = new Date().toISOString()
+    const updatedAt = new Date().toISOString()
+    const creatorId =  payload.id
+    const creatorName =  payload.name
+
     //instancia do post
     const newPost = new Posts(
         id, 
         content,
-        likes,
-        dislikes,
+        0,
+        0,
         createdAt,
         updatedAt,
         creatorId,
@@ -60,26 +60,27 @@ public createPost = async (input:CreatePostInputDTO):Promise<CreatePostOutputDTO
 
     await this.postsDatabase.createPost(postToDB)
 
-const output = this.postDTO.createPostOutputDTO(newPost)
-
- return output
 }
 public editPost = async (input:any) =>{
-    const {newId, newContent, likes, dislikes, createdAt, updatedAt, creatorId, creatorName} =input
+    const {newId, token, newContent} =input
+    const payload = this.tokenManager.getPayload(token)
 
+    if (token === undefined)throw new BadRequestError("Espera-se um token")
+    if (payload === null)throw new BadRequestError("token inválido")
+    if(newContent === undefined)throw new BadRequestError("Content é obrigatório")
+    if(typeof newContent !== "string")throw new BadRequestError("Content deve ser string")
+    
     if(newId !== undefined){
-        if(typeof newId !== "string"){
-        throw new BadRequestError("Id deve ser string")
-        } if(newContent.length < 2){
-            throw new BadRequestError("Content deve possuir ao menos 2 caracteres")
-        }
+        if(typeof newId !== "string")throw new BadRequestError("Id deve ser string")
+        if(newContent.length < 2)throw new BadRequestError("Content deve possuir ao menos 2 caracteres")
     }
 
     const postsDBIdExists = await this.postsDatabase.findPostById(newId)
+    if(!postsDBIdExists)throw new NotFoundError("Id não encontrado")
 
-    if(!postsDBIdExists){
-        throw new NotFoundError("Id não encontrado")
-    }
+    const creatorId = payload.id
+    const creatorName = payload.name
+
     const putPost = new Posts(
         postsDBIdExists.id, 
         postsDBIdExists.content,
@@ -87,33 +88,34 @@ public editPost = async (input:any) =>{
         postsDBIdExists.dislikes,
         postsDBIdExists.created_at,
         postsDBIdExists.updated_at,
-        postsDBIdExists.creator_id,
-        postsDBIdExists.creator_name
+        creatorId,
+        creatorName
     ) 
     //enquanto newId for thruty, não executa o putPost, quando for falsy, setId altera o valor de newId
     newId && putPost.setId(newId)
     newContent && putPost.setContent(newContent)
 
-    const postToDB = putPost.toDBModelPosts()
+    const putPostDB = putPost.toDBModelPosts()
 
-    await this.postsDatabase.upDatePostById(postToDB)
-
-const output = "Post criado"
-
- return output
+    await this.postsDatabase.upDatePostById(putPostDB)
 
 }
 public deletePost = async(input:any) =>{
-    const {idToDelete} = input
-
+    const {idToDelete, token} = input
+    const payload = this.tokenManager.getPayload(token)
     const postDeleteDB = await this.postsDatabase.findPostById(idToDelete)
 
-    if(!postDeleteDB){
-        throw new NotFoundError("Id não encontrado")
-    }
-    await this.deletePost(postDeleteDB.id)
+    if (token === undefined)throw new BadRequestError("token ausente")
+    if (payload === null) throw new BadRequestError("token inválido")
+    if(!postDeleteDB)throw new NotFoundError("Id não encontrado")
 
-    const output ="Post deletado"
-    return output
+    const creatorId = payload.id
+        if (payload.role !== USER_ROLES.ADMIN
+            && postDeleteDB.creator_id !== creatorId
+        ) {
+            throw new BadRequestError("Apenas quem criou a playlist pode deletá-la")
+        }
+    await this.postsDatabase.deletedPostById(idToDelete)
+
 }
 }
