@@ -52,7 +52,7 @@ CREATE TABLE likes_deslikes(
         ON UPDATE CASCADE
 );
 DROP TABLE likes_deslikes;
-SELECT * FROM likes_deslikes;
+SELECT * FROM users;
 
 INSERT INTO likes_deslikes (user_id, post_id, like)
 VALUES

@@ -11,9 +11,8 @@ export const postsRouter = express.Router()
 const postController = new PostController(
     new PostsBusiness(
         new PostDatabase(),
-        new PostDTO(),
         new IdGenerator(),
-        new TokenManager
+        new TokenManager()
     ),
       new PostDTO()
 
@@ -22,3 +21,4 @@ postsRouter.get("/", postController.getPosts)
 postsRouter.post("/", postController.createPost)
 postsRouter.put("/:id", postController.editPost)
 postsRouter.delete("/:id", postController.deletePost)
+postsRouter.put("/:id/like", postController.likeOrDislikePost)
