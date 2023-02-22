@@ -79,7 +79,7 @@ return result[0]
             .delete()
             .where({
                 user_id: likeDislikeDB.user_id,
-                playlist_id: likeDislikeDB.post_id
+                post_id: likeDislikeDB.post_id
             })
     }
     public updateLikeDislike = async (
@@ -89,7 +89,7 @@ return result[0]
             .update(likeDislikeDB)
             .where({
                 user_id: likeDislikeDB.user_id,
-                playlist_id: likeDislikeDB.post_id
+                post_id: likeDislikeDB.post_id
             })
     }
 
