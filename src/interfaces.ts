@@ -2,6 +2,10 @@ export enum USER_ROLES{
     NORMAL="NORMAL",
     ADMIN="ADMIN"
 }
+export enum POST_LIKE {
+    ALREADY_LIKED = "ALREADY LIKED",
+    ALREADY_DISLIKED = "ALREADY DISLIKED"
+}
 export interface TokenPayload {
     id: string,
 	name: string,
@@ -15,14 +19,6 @@ export interface IUsersDB{
     role: USER_ROLES,
     created_at: string
 }
-export interface createUserInput{
-    id: string,
-    name: string,
-    email:string,
-    password: string,
-    role: string,
-    createdAt: string
-}
 export interface UserModel{
     id: string,
     name: string,
@@ -31,27 +27,9 @@ export interface UserModel{
     role: USER_ROLES,
     createdAt: string
 }
-export interface SignupInput {
-    name: string,
-    email: string,
-    password: string
-}
-export interface SignupOutput {
-    token: string
-}
-
-export interface LoginInput {
-    email: unknown,
-    password: unknown
-}
-
-export interface LoginOutput {
-    token: string
-}
 export interface IPostDB{
     id: string,
     creator_id: string,
-    creator_name:string,
     content: string,
     likes: number,
     dislikes: number,
@@ -67,24 +45,30 @@ export interface PostsModel{
     updatedAt: string,
     creator:{
         id:string,
-        name:string
     }
-   
 }
 export interface CreatePostInputDTO{
-    id: string,
-    content: string,
-    likes:number,
-    dislikes: number,
-    createdAt:string,
-    updatedAt:string,
-    creatorId:string,
-    creatorName:string
+    token: string | undefined,
+    content: string
 }
-export interface CreatePostOutputDTO{
-    mensagem:string,
-    post:{
-        id:string,
-        content:string
-    }
+export interface EditPostInputDTO {
+    id: string,
+    token: string | undefined,
+    newContent: unknown
+}
+
+export interface DeletePostInputDTO {
+    id: string,
+    token: string | undefined
+}
+
+export interface LikeOrDislikeDB{
+    user_id: string,
+    post_id: string,
+    like: number
+}
+export interface LikeOrDislikePostDTO{
+    id: string,
+    token:string | undefined,
+    like: unknown
 }

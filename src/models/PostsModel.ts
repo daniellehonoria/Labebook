@@ -8,9 +8,7 @@ export class Posts{
        private dislikes: number,
        private createdAt: string,
        private updatedAt: string,
-       private creatorId: string,
-       private creatorName:string
-
+       private creatorId: string
     ){}
     public getId(): string{
         return this.id
@@ -29,6 +27,18 @@ export class Posts{
     }
     public setLike(value:number): void{
         this.likes = value
+    }
+    public addLike(){
+        this.likes +=1
+    }
+    public removeLike(){
+        this.likes -=1
+    }
+    public addDislike(){
+        this.dislikes +=1
+    }
+    public removeDislike(){
+        this.dislikes -=1
     }
     public getDislike():number{
        return this.dislikes
@@ -54,18 +64,12 @@ export class Posts{
     public setCreatorId(value:string):void{
         this.creatorId = value
     }
-    public getCreatorName(): string{
-        return this.creatorName
-    }    
-    public setCreatorName(value:string):void{
-        this.creatorName = value
-    }
+
 
     public toDBModelPosts():IPostDB{
         return{
             id: this.id,
             creator_id:this.creatorId,
-            creator_name:this.creatorName,
             content: this.content,
             likes: this.likes,
             dislikes: this.dislikes,
@@ -83,7 +87,6 @@ export class Posts{
             updatedAt: this.updatedAt,
             creator:{
                 id:this.creatorId,
-                name:this.creatorName
             }
         }
     }
